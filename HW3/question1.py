@@ -1,7 +1,6 @@
 import numpy as np
 import cv2
 import itertools
-import time
 from multiprocessing import Pool
 from functools import partial
 
@@ -187,19 +186,20 @@ def compute_d_plan(info):
 if __name__ == '__main__':
     im1 = cv2.imread("subject/leftTest.png", cv2.IMREAD_GRAYSCALE)
     im2 = cv2.imread("subject/rightTest.png", cv2.IMREAD_GRAYSCALE)
+    win_size = 5
+    d_min = 0
+    d_max = 4
+    disp_lr = compute_disparity2_mapped(im1, im2,
+                                        window_size=win_size,
+                                        d_min=d_min,
+                                        d_max=d_max,
+                                        explore_right=False)
+    disp_rl = compute_disparity2_mapped(im2, im1,
+                                        window_size=win_size,
+                                        d_min=d_min,
+                                        d_max=d_max,
+                                        explore_right=True)
+    cv2.imwrite("Images/ps2-1-a-1.png", (disp_lr - d_min) * 255 / (d_max - d_min))
+    cv2.imwrite("Images/ps2-1-a-2.png", (disp_rl - d_min) * 255 / (d_max - d_min))
 
-    start = time.time()
-    # disparity = compute_disparity_mapped(im1, im2,
-    #                                      window_size=11,
-    #                                      d_min=0,
-    #                                      d_max=10)
-    disp = compute_disparity2(im1, im2,
-                              window_size=11,
-                              d_min=0,
-                              d_max=10)
-    print(time.time() - start)
-    print(disp.shape)
-    print(disp.dtype)
-    print(np.max(disp))
-    print(np.min(disp))
 
