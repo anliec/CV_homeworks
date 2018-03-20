@@ -124,3 +124,8 @@ ENV/
 *~
 *.dvi
 *.gz
+*.bbl
+*.blg
+
+#generated Images
+Images/
