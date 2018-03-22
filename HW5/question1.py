@@ -53,8 +53,9 @@ def harris_filtering(harris_r: np.ndarray, number_of_points: int, win_size=5):
     for i in range(number_of_points):
         p = np.argmax(r)
         p_x, p_y = p // r_h, p % r_h
-        r_filtered[p_x, p_y] = r[p_x, p_y]
-        r[p_x - win_radius:p_x + win_radius + 1, p_y - win_radius:p_y + win_radius + 1] = 0.0
+        # r_filtered[p_x, p_y] = r[p_x, p_y]
+        r_filtered[p_x, p_y] = 1
+        r[max(0, p_x - win_radius):p_x + win_radius + 1, max(0, p_y - win_radius):p_y + win_radius + 1] = 0.0
     return r_filtered
 
 
@@ -84,8 +85,8 @@ if __name__ == '__main__':
 
     print("Question 1.2 and 1.3")
 
-    win_size = 5
-    number_of_point = 1000
+    win_size = 10
+    number_of_point = 200
     r, _, _ = harris_transform(trans_a, win_size)
     cv2.imwrite("Images/ps4-1-2-a.png", int_img_to_unint8(r))
     r_f = harris_filtering(r, number_of_point, win_size*2)

@@ -8,14 +8,14 @@ from HW5.question1 import harris_transform
 def compute_keypoint_from_harris(img:np.ndarray, keypoint_number=100, win_size=5):
     r, i_x, i_y = harris_transform(img, win_size)
     r_w, r_h = r.shape
-    win_radius = int(floor((win_size - 1) / 2))
+    win_radius = int(floor((win_size * 2 - 1) / 2))
     kp_list = []
     for i in range(keypoint_number):
         # find good corner
         p = np.argmax(r)
         p_x, p_y = p // r_h, p % r_h
         # remove good corner neighbors
-        r[p_x - win_radius:p_x + win_radius + 1, p_y - win_radius:p_y + win_radius + 1] = 0.0
+        r[max(p_x - win_radius, 0):p_x + win_radius + 1, max(p_y - win_radius, 0):p_y + win_radius + 1] = 0.0
         # create keypoint
         kp = cv2.KeyPoint()
         kp.angle = atan2(i_y[p_x, p_y], i_x[p_x, p_y]) * 180.0 / np.pi
@@ -55,20 +55,20 @@ if __name__ == '__main__':
     im_list = [trans_a, trans_b, sim_a, sim_b]
 
     sift = cv2.xfeatures2d.SIFT_create()
+    bf = cv2.BFMatcher()
     des = list()
     kp = list()
 
     for i, f in enumerate(im_list):
-        kp.append(compute_keypoint_from_harris(f, 300, 5))
+        kp.append(compute_keypoint_from_harris(f, 200, 5))
         # kp = sift.detect(f, None)
         f_kp = cv2.drawKeypoints(f, kp[i], None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
         cv2.imwrite('Images/ps4-2-1-' + str(i) + '.png', f_kp)
-        _, descriptor = sift.compute(trans_a, kp[i])
+        _, descriptor = sift.compute(f, kp[i])
         des.append(descriptor)
 
     for i in range(0, 3, 2):
-        bf = cv2.BFMatcher()
-        matches = bf.knnMatch(des[i], des[i+1], 2)
+        matches = bf.knnMatch(des[i], des[i+1], k=2)
         good = []
         for m, n in matches:
             if m.distance < n.distance * 0.75:
