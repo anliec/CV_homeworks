@@ -14,16 +14,19 @@ def int_img_to_unint8(img):
 
 
 def compute_gradient(img: np.ndarray, direction: str):
+    ret = np.zeros(img.shape)
     if direction == "X":
         imgA = np.array(img[:-1, :], dtype=np.int32)
         imgB = np.array(img[1:, :], dtype=np.int32)
+        ret[:-1, :] = imgA - imgB
     elif direction == "Y":
         imgA = np.array(img[:, :-1], dtype=np.int32)
         imgB = np.array(img[:, 1:], dtype=np.int32)
+        ret[:, :-1] = imgA - imgB
     else:
         raise ValueError("direction argument is expected to be 'X' or 'Y' only")
 
-    return imgA - imgB
+    return ret
 
 
 def harris_transform(img: np.ndarray, win_size: int, alpha=1.0):

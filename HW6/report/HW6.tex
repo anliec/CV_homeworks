@@ -1,0 +1,362 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[english]{babel}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{amsmath}
+\usepackage{tabularx}
+\usepackage{geometry}
+
+\geometry{a4paper,
+ left=20mm,
+ right=20mm,
+ top=30mm,
+ bottom=30mm,
+}
+
+\usepackage{siunitx}
+\sisetup{output-exponent-marker=\ensuremath{\mathrm{e}}}
+
+\titleformat{\section}{\normalfont\Large\bfseries}{Question \thesection}{1em}{}
+% \renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Python,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+%   columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=left,
+%   frame=single,
+  morekeywords={mean,std},
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\title{Computer vision - Problem set 5}
+\author{Nicolas Six}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents{}
+
+\section{Gaussian and Laplacian Pyramids}
+
+\subsection{Gaussian pyramids}
+
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[t]{.24\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-1-1-1}.png}
+      \caption{Level 1}
+    \end{subfigure}
+    \begin{subfigure}[t]{.24\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-1-1-2}.png}
+      \caption{level 2}
+    \end{subfigure}
+        \begin{subfigure}[t]{.24\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-1-1-3}.png}
+      \caption{level 3}
+    \end{subfigure}
+        \begin{subfigure}[t]{.24\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-1-1-4}.png}
+      \caption{level 4}
+    \end{subfigure}
+    \caption{4 levels Gaussian pyramid}
+  \end{center}
+\end{figure}
+
+\lstinputlisting[language=Python, firstline=5, lastline=8]{../question1.py}
+
+
+\subsection{Laplacian pyramid}
+
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[t]{.24\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-1-2-1}.png}
+      \caption{Level 1}
+    \end{subfigure}
+    \begin{subfigure}[t]{.24\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-1-2-2}.png}
+      \caption{level 2}
+    \end{subfigure}
+        \begin{subfigure}[t]{.24\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-1-2-3}.png}
+      \caption{level 3}
+    \end{subfigure}
+        \begin{subfigure}[t]{.24\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-1-1-4}.png}
+      \caption{level 4 (Gaussian)}
+    \end{subfigure}
+    \caption{4 levels Laplacian pyramid}
+  \end{center}
+\end{figure}
+
+\lstinputlisting[language=Python, firstline=11, lastline=21]{../question1.py}
+
+
+\section{Lucas Kanade optic flow}
+\subsection{On small movement}
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[t]{.49\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-2-1-R2}.png}
+      \caption{ShiftR2}
+    \end{subfigure}
+    \begin{subfigure}[t]{.49\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-2-1-R5U5}.png}
+      \caption{ShiftR5U5}
+    \end{subfigure}
+    \caption{Lucas Kanade displacement arrows draw over original image, computed after adding a 51px Gaussian blur}
+  \end{center}
+\end{figure}
+
+\lstinputlisting[language=Python, firstline=27, lastline=52]{../question2.py}
+
+\subsection{On larger movement}
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[t]{.49\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-2-1-R10}.png}
+      \caption{ShiftR10}
+    \end{subfigure}
+    \begin{subfigure}[t]{.49\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-2-1-R20}.png}
+      \caption{ShiftR20}
+    \end{subfigure}
+    \begin{subfigure}[t]{.49\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-2-1-R40}.png}
+      \caption{ShiftR40}
+    \end{subfigure}
+    \caption{Lucas Kanade displacement arrows draw over original image, computed after adding a 51px Gaussian blur}
+  \end{center}
+\end{figure}
+
+\paragraph{}
+We verify, here, that Lucas Kanade does not work well on big movement. If the general movement is still globally in the right direction, the bigger is the shift, the bigger is the noise.
+
+
+\subsection{Gaussian pyramid}
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[t]{.49\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-2-3-0q}.png}
+      \caption{Yosemite image 1}
+    \end{subfigure}
+    \begin{subfigure}[t]{.49\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-2-3-1q}.png}
+      \caption{Yosemite image 2}
+    \end{subfigure}
+    \begin{subfigure}[t]{.49\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-2-3-2q}.png}
+      \caption{Dog 0}
+    \end{subfigure}
+    \begin{subfigure}[t]{.49\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-2-3-3q}.png}
+      \caption{Dog 1}
+    \end{subfigure}    
+    \caption{Lucas Kanade displacement arrows draw over original image}
+  \end{center}
+\end{figure}
+
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[t]{.24\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-2-3-0}.png}
+      \caption{Yosemite image 1}
+    \end{subfigure}
+    \begin{subfigure}[t]{.24\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-2-3-1}.png}
+      \caption{Yosemite image 2}
+    \end{subfigure}
+    \begin{subfigure}[t]{.24\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-2-3-2}.png}
+      \caption{Dog 0}
+    \end{subfigure}
+    \begin{subfigure}[t]{.24\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-2-3-3}.png}
+      \caption{Dog 1}
+    \end{subfigure}    
+    \caption{Difference between the wrapped and destination image}
+    \label{diff23}
+  \end{center}
+\end{figure}
+
+\lstinputlisting[language=Python, firstline=56, lastline=61]{../question2.py}
+
+\paragraph{}
+On Figure \ref{diff23}, you can see that the wrapped image does not allow to recover the destination image. We were expecting better results, but did not fund how to get them.
+
+
+\section{Hierarchical LK optic flow}
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[t]{.49\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-3-0-10q}.png}
+      \caption{shiftR10}
+    \end{subfigure}
+    \begin{subfigure}[t]{.49\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-3-0-20q}.png}
+      \caption{shift20}
+    \end{subfigure}
+    \begin{subfigure}[t]{.49\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-3-0-40q}.png}
+      \caption{shiftR40}
+    \end{subfigure}  
+    \caption{Lucas Kanade displacement arrows draw over original image}
+  \end{center}
+\end{figure}
+
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[t]{.24\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-3-0-10}.png}
+      \caption{shiftR10}
+    \end{subfigure}
+    \begin{subfigure}[t]{.24\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-3-0-20}.png}
+      \caption{shift20}
+    \end{subfigure}
+    \begin{subfigure}[t]{.24\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-3-0-40}.png}
+      \caption{shiftR40}
+    \end{subfigure}
+    \caption{Difference between the wrapped and destination image}
+  \end{center}
+\end{figure}
+
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[t]{.49\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-3-1-0q}.png}
+      \caption{Yosemite image 1}
+    \end{subfigure}
+    \begin{subfigure}[t]{.49\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-3-1-1q}.png}
+      \caption{Yosemite image 2}
+    \end{subfigure}
+    \begin{subfigure}[t]{.49\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-3-2-0q}.png}
+      \caption{Dog 0}
+    \end{subfigure}
+    \begin{subfigure}[t]{.49\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-3-2-1q}.png}
+      \caption{Dog 1}
+    \end{subfigure}    
+    \caption{Lucas Kanade displacement arrows draw over original image}
+  \end{center}
+\end{figure}
+
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[t]{.24\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-3-1-0}.png}
+      \caption{Yosemite image 1}
+    \end{subfigure}
+    \begin{subfigure}[t]{.24\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-3-1-1}.png}
+      \caption{Yosemite image 2}
+    \end{subfigure}
+    \begin{subfigure}[t]{.24\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-3-2-0}.png}
+      \caption{Dog 0}
+    \end{subfigure}
+    \begin{subfigure}[t]{.24\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-3-2-1}.png}
+      \caption{Dog 1}
+    \end{subfigure}    
+    \caption{Difference between the wrapped and destination image}
+  \end{center}
+\end{figure}
+
+\lstinputlisting[language=Python, firstline=11, lastline=32]{../question3.py}
+
+\section{The Juggle Sequence}
+
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[t]{.49\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-4-1-0q}.png}
+      \caption{Juggle 1}
+    \end{subfigure}
+    \begin{subfigure}[t]{.49\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-4-1-1q}.png}
+      \caption{Juggle 2}
+    \end{subfigure} 
+    \caption{Lucas Kanade displacement arrows draw over original image}
+  \end{center}
+\end{figure}
+
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[t]{.30\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-4-1-0}.png}
+      \caption{Juggle 1}
+    \end{subfigure}
+    \begin{subfigure}[t]{.30\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps5-4-1-1}.png}
+      \caption{Juggle 2}
+    \end{subfigure} 
+    \caption{Difference between the wrapped and destination image}
+  \end{center}
+\end{figure}
+
+\end{document}
