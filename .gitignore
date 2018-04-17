@@ -126,6 +126,9 @@ ENV/
 *.gz
 *.bbl
 *.blg
+*.avi
+*.txt
+*.m
 
 #generated Images
 Images/
