@@ -36,13 +36,13 @@ def update_p(particles, img, ref, sigma=1000.0, noise_scale=10.0):
 
 def draw_particles(particles, image, patch_shape, center=None):
     i = image.copy()
-    for u, v in particles:
-        cv2.circle(i, (v, u), 2, (255, 0, 0))
+    for u, v in particles[:, :2]:
+        cv2.circle(i, (int(v), int(u)), 2, (255, 0, 0))
 
     if center is None:
         center_u, center_v = tuple(map(int, np.average(particles, axis=0)))
     else:
-        center_u, center_v = center
+        center_u, center_v = center[:2]
     p_aw, p_ah = tuple(map(lambda x: x // 2, patch_shape[0:2]))
 
     deviation = int(np.mean(np.linalg.norm(particles - center, axis=1)))
@@ -55,7 +55,7 @@ def draw_particles(particles, image, patch_shape, center=None):
 
 def question1_1():
     video = cv2.VideoCapture("subject/pres_debate.avi")
-    p = init_particles(200, 255, 370, noise_scale=1.0)
+    p = init_particles(10, 255, 370, noise_scale=1.0)
     i = 0
     while True:
         # Capture frame-by-frame
@@ -63,14 +63,11 @@ def question1_1():
         if frame is None:
             break
 
-        # Our operations on the frame come here
-        # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
         if i == 0:
             ref = get_patch(frame, 140, 120, 255, 370)
             cv2.imwrite("Images/ps6-1-1-0.png", ref)
 
-        p, center = update_p(p, frame, ref, noise_scale=5.0)
+        p, center = update_p(p, frame, ref, noise_scale=7.0, sigma=100)
 
         img = draw_particles(p, frame, ref.shape, center)
 
@@ -88,7 +85,7 @@ def question1_1():
 
 def question1_5():
     video = cv2.VideoCapture("subject/noisy_debate.avi")
-    p = init_particles(200, 255, 370, noise_scale=1.0)
+    p = init_particles(50, 255, 370, noise_scale=1.0)
     i = 0
     while True:
         # Capture frame-by-frame
@@ -98,10 +95,10 @@ def question1_5():
         # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         if i == 0:
-            ref = get_patch(frame, 140, 120, 255, 370)
+            ref = get_patch(frame, 120, 110, 255, 370)
             cv2.imwrite("Images/ps6-1-2-0.png", ref)
 
-        p, center = update_p(p, frame, ref, noise_scale=5.0)
+        p, center = update_p(p, frame, ref, noise_scale=3.0, sigma=100)
 
         img = draw_particles(p, frame, ref.shape, center)
 

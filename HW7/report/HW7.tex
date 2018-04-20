@@ -1,0 +1,238 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[english]{babel}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{amsmath}
+\usepackage{tabularx}
+\usepackage{geometry}
+
+\geometry{a4paper,
+ left=20mm,
+ right=20mm,
+ top=30mm,
+ bottom=30mm,
+}
+
+\usepackage{siunitx}
+\sisetup{output-exponent-marker=\ensuremath{\mathrm{e}}}
+
+\titleformat{\section}{\normalfont\Large\bfseries}{Question \thesection}{1em}{}
+% \renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Python,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+%   columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=left,
+%   frame=single,
+  morekeywords={mean,std},
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\title{Computer vision - Problem set 6}
+\author{Nicolas Six}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents{}
+
+\section{Particle Filter Tracking}
+
+\subsection{Basic Implementation}
+
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[t]{.3\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps6-1-1-28}.png}
+      \caption{frame 28}
+    \end{subfigure}
+    \begin{subfigure}[t]{.3\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps6-1-1-84}.png}
+      \caption{frame 84}
+    \end{subfigure}
+    \begin{subfigure}[t]{.3\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps6-1-1-144}.png}
+      \caption{frame 144}
+    \end{subfigure}
+    \begin{subfigure}[t]{.2\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps6-1-1-0}.png}
+      \caption{Reference patch}
+    \end{subfigure}
+    \caption{frame examples and reference}
+  \end{center}
+\end{figure}
+
+\lstinputlisting[language=Python, firstline=6, lastline=83]{../question1.py}
+
+\subsubsection{Window size}
+\paragraph{}
+Small windows patch have the first advantage to run faster than large one, if our code is not really optimized, this has still an importance in some case. In addition small windows are generally more resilient to as they are less inflected by the moving background, while at the same time less influenced by the outline of the face when it turn around.
+
+Bigger windows have the advantage of being more stable as long as the object does not move or change much, as they can rely on the contrast with the background to get a better tracking. This particularly true when this contrast is hight and even more if it is uniform.
+
+%\subsubsection{The $\sigma_{MSE}$ parameter}
+\paragraph{}
+%The $\sigma_{MSE}$ parameter have a large effect on how the particles spread. Large value give more odd of survival to outliers, while small value recenter the particles around the bests possibilities. So when $\sigma_{MSE}$ is small the accuracy will probably be smaller but the tracking more resilient.
+
+\subsubsection{Number of particles}
+\paragraph{}
+The particles are at the same time the strength and the weakness of the particle filter. A strength, because particles can easily represent any parameter but a weakness as the more dimension they will represent the more particles will be needed to cover the described volume. In most case, the computation time of a particles filter is linear in the number of particles and when some heavy computation are needed to evaluate a particle, this time can grow significantly. It was the case here, and it's why we chose to use 10 particles.
+
+
+\subsubsection{Tracking with noise}
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[t]{.3\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps6-1-5-14}.png}
+      \caption{frame 14}
+    \end{subfigure}
+    \begin{subfigure}[t]{.3\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps6-1-5-32}.png}
+      \caption{frame 32}
+    \end{subfigure}
+    \begin{subfigure}[t]{.3\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps6-1-5-46}.png}
+      \caption{frame 46}
+    \end{subfigure}
+    \begin{subfigure}[t]{.2\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps6-1-2-0}.png}
+      \caption{Reference patch}
+    \end{subfigure}
+    \caption{frame examples and reference}
+  \end{center}
+\end{figure}
+
+\lstinputlisting[language=Python, firstline=86, lastline=114]{../question1.py}
+
+\paragraph{}
+Noise really confuse particle filter. If we allow the particles to move too far away they will match completely different region from the wanted face (usually the tie).
+
+
+
+\section{Appearance Model Update}
+\subsection{Tracking the hand}
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[t]{.3\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps6-2-1-15}.png}
+      \caption{frame 15}
+    \end{subfigure}
+    \begin{subfigure}[t]{.3\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps6-2-1-50}.png}
+      \caption{frame 50}
+    \end{subfigure}
+    \begin{subfigure}[t]{.3\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps6-2-1-140}.png}
+      \caption{frame 140}
+    \end{subfigure}
+    \begin{subfigure}[t]{.2\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps6-2-1-0}.png}
+      \caption{Reference patch}
+    \end{subfigure}
+    \caption{frame examples and reference}
+  \end{center}
+\end{figure}
+\lstinputlisting[language=Python, firstline=8, lastline=9]{../question2.py}
+
+\subsection{Tracking the hand with noise}
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[t]{.3\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps6-2-2-15}.png}
+      \caption{frame 15}
+    \end{subfigure}
+    \begin{subfigure}[t]{.3\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps6-2-2-50}.png}
+      \caption{frame 50}
+    \end{subfigure}
+    \begin{subfigure}[t]{.3\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps6-2-2-140}.png}
+      \caption{frame 140}
+    \end{subfigure}
+    \begin{subfigure}[t]{.2\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps6-2-2-0}.png}
+      \caption{Reference patch}
+    \end{subfigure}
+    \caption{frame examples and reference}
+  \end{center}
+\end{figure}
+\lstinputlisting[language=Python, firstline=8, lastline=9]{../question2.py}
+
+\paragraph{}
+To make the particles filter work here we only had to change the $\alpha$ parameter to allow the reference patch to learn the noise quickly, doing that, the patch can stay on the hand and does not go too far away from it, in which case it will end up learning to stay there.
+
+
+\section{Incorporating More Dynamics}
+\subsection{Tracking pedestrian}
+\begin{figure}[h!]
+  \begin{center}
+    \begin{subfigure}[t]{.3\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps6-3-1-40}.png}
+      \caption{frame 15}
+    \end{subfigure}
+    \begin{subfigure}[t]{.3\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps6-3-1-100}.png}
+      \caption{frame 50}
+    \end{subfigure}
+    \begin{subfigure}[t]{.3\columnwidth}
+      \centering
+      \includegraphics[width=.99\linewidth]{{../Images/ps6-3-1-240}.png}
+      \caption{frame 140}
+    \end{subfigure}
+    \begin{subfigure}[t]{.2\columnwidth}
+      \centering
+      \includegraphics[width=.2\linewidth]{{../Images/ps6-3-1-0}.png}
+      \caption{Reference patch}
+    \end{subfigure}
+    \caption{frame examples and reference}
+  \end{center}
+\end{figure}
+\lstinputlisting[language=Python, firstline=8, lastline=105]{../question3.py}
+
+\subsection{Number of particles}
+\paragraph{}
+We used 1000 particles to track the woman here. This number is significantly higher than previously because we add to track an other dimension and so to have enough particles to fill a volume instead of a surface.
+
+
+
+\end{document}

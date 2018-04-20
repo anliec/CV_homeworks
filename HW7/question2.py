@@ -19,7 +19,7 @@ def question2_1():
     center = np.array((460, 575))
     last_center = center
     move = np.array((0, 0))
-    p = init_particles(800, center[0], center[1], noise_scale=1.0)
+    p = init_particles(600, center[0], center[1], noise_scale=1.0)
     i = 0
     while True:
         # Capture frame-by-frame
@@ -31,7 +31,7 @@ def question2_1():
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY).reshape(frame.shape[:2] + (1,))
 
         if i == 0:
-            ref = get_patch(frame, 140, 140, center[0], center[1])
+            ref = get_patch(frame, 100, 100, center[0], center[1])
             cv2.imwrite("Images/ps6-2-1-0.png", ref)
 
         p, move = predict_p(p, center, last_center)
@@ -39,16 +39,17 @@ def question2_1():
         p, center = update_p(p,
                              frame,
                              ref,
-                             noise_scale=25.0 + np.linalg.norm(move, 2) * 2.0,
-                             sigma=600.0)
+                             noise_scale=5.0 + np.linalg.norm(move, 2) * 1.0,
+                             sigma=150.0)
 
         img = draw_particles(p, frame, ref.shape, center)
 
         ref = update_patch(ref, get_patch(frame, ref.shape[0], ref.shape[1], center[0], center[1]),
-                           alpha=0.7)
+                           alpha=0.99)
 
         # Display the resulting frame
         cv2.imshow('frame', img)
+        cv2.imshow('ref', ref.astype(np.uint8))
 
         if i in [15, 50, 140]:
             cv2.imwrite("Images/ps6-2-1-" + str(i) + ".png", img)
@@ -61,10 +62,10 @@ def question2_1():
 
 def question2_2():
     video = cv2.VideoCapture("subject/noisy_debate.avi")
-    center = np.array((460, 575))
+    center = np.array((470, 575))
     last_center = center
     move = np.array((0, 0))
-    p = init_particles(800, center[0], center[1], noise_scale=1.0)
+    p = init_particles(400, center[0], center[1], noise_scale=1.0)
     i = 0
     while True:
         # Capture frame-by-frame
@@ -76,7 +77,7 @@ def question2_2():
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY).reshape(frame.shape[:2] + (1,))
 
         if i == 0:
-            ref = get_patch(frame, 140, 140, center[0], center[1])
+            ref = get_patch(frame, 100, 100, center[0], center[1])
             cv2.imwrite("Images/ps6-2-2-0.png", ref)
 
         p, move = predict_p(p, center, last_center)
@@ -84,13 +85,14 @@ def question2_2():
         p, center = update_p(p,
                              frame,
                              ref,
-                             noise_scale=25.0 + np.linalg.norm(move, 2) * 2.0,
-                             sigma=600.0)
+                             noise_scale=5.0 + np.linalg.norm(move, 2) * 1.0,
+                             sigma=150.0)
 
         img = draw_particles(p, frame, ref.shape, center)
 
-        ref = update_patch(ref, get_patch(frame, ref.shape[0], ref.shape[1], center[0], center[1]),
-                           alpha=0.3)
+        ref = update_patch(ref,
+                           get_patch(frame, ref.shape[0], ref.shape[1], center[0], center[1]),
+                           alpha=0.85)
 
         # Display the resulting frame
         cv2.imshow('frame', img)
